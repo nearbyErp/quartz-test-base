@@ -1,3 +1,7 @@
+---
+title: ERP Test Plans
+---
+
 # Test Plans — Obsidian ERP
 
 Документация ручного тестирования. Markdown с структурой, совместимой с любым TMS (Qase / TestRail / Notion / TestLink) — при выборе TMS импортируется через CSV/копирование.
