@@ -34,7 +34,7 @@ X-Approval-Token: <от manager-auth>      (для escalations)
 
 ### TC-PIN-001 — Корректный PIN кассира
 **Status:** ⛔ blocked (pos-bff недоступен снаружи)
-Через POS desktop у Сашко работает. Не воспроизводимо через CLI.
+Через POS desktop у Александр работает. Не воспроизводимо через CLI.
 
 ### TC-PIN-002 — Неверный PIN
 **Status:** ◯ todo (POS desktop)

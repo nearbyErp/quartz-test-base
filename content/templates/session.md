@@ -8,7 +8,7 @@
 ---
 date: 2026-MM-DD
 type: e2e | regression | smoke | exploratory | onboarding
-tester: Сашко + Claude
+tester: Александр + Claude
 duration_h: ?
 cases_run: ?
 findings: ?

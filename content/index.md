@@ -4,94 +4,87 @@ title: ERP Test Base
 
 # ERP — Тестовая база
 
-Рабочее пространство тестирования цепочки Admin → POS → KDS платформы Obsidian ERP. Не для разработчиков (для них — `archive/BUGS-FOR-DEV*.md`), а для нашей с тобой работы.
+Рабочее пространство тестирования цепочки Admin → POS → KDS платформы Obsidian ERP.
 
 ## Быстрый доступ
 
 | Куда | Зачем |
 |------|-------|
+| **[CONTEXT.md](CONTEXT.md)** | **Главный living-doc — стенды, наполнение, блокеры, хронология сессий.** Читать первым |
 | [findings.md](findings.md) | Все известные баги (BUG-NNN backlog + F-NN наши, единая таблица) |
-| [todo.md](todo.md) | Что хочется покрыть в следующий раз |
-| [sessions/](sessions/) | Хронология прогонов |
+| [todo.md](todo.md) | План дальнейшего |
 | [zones/](zones/) | Тест-кейсы по доменам приложения |
 | [scenarios/](scenarios/) | Сквозные e2e сценарии (ссылаются на zones) |
 | [checklists/](checklists/) | Универсальные чек-листы (smoke, form-validation) |
 | [reference/stand.md](reference/stand.md) | URL, креды, тестовые id, helper-curl |
 | [reference/endpoints.md](reference/endpoints.md) | Карта реальных API endpoints |
 | [templates/](templates/) | Шаблоны новых TC, багов, сессий |
-| [archive/](archive/) | Старое: BUGS-FOR-DEV* для коллеги, оригиналы файлов |
+| [screenshots/](screenshots/) | Скриншоты с прогонов, по папкам `<session-id>/` |
+| [archive/dev-handoffs/](archive/dev-handoffs/) | Узкоцелевые документы для разработчика (KDS-blocker, POS-onboarding и т.п.) |
+| [archive/legacy-sessions/](archive/legacy-sessions/) | Старые sessions/* и SUMMARY-* (frozen, для истории) |
 
 ## Структура
 
 ```
 test-base/
-├── index.md                     ← ты здесь
-├── findings.md                  все баги
-├── todo.md                      план дальнейшего
-├── sessions/                    хронология (один файл = одна сессия)
-├── zones/                       тест-кейсы по доменам
-│   ├── catalog/
-│   ├── orders/
-│   ├── payments/
-│   ├── kds/
-│   ├── pos/
-│   └── auth-rbac/
-├── scenarios/                   e2e сценарии (списки ссылок на TC)
-├── checklists/                  универсальные (smoke, form-validation)
-├── reference/                   стенд + endpoints
-├── templates/                   шаблоны
-└── archive/                     старое
+├── index.md                 ← навигация (ты здесь)
+├── CONTEXT.md               ← главный living-doc (стенды, состояние, хронология)
+├── findings.md              ← все баги
+├── todo.md                  ← план дальнейшего
+├── zones/                   ← тест-кейсы по доменам (catalog/orders/payments/kds/pos/auth-rbac)
+├── scenarios/               ← e2e сценарии
+├── checklists/              ← универсальные (smoke, form-validation)
+├── reference/               ← стенд + endpoints
+├── templates/               ← шаблоны
+├── screenshots/             ← скриншоты прогонов
+└── archive/
+    ├── dev-handoffs/        ← узкоцелевые документы для разраба
+    └── legacy-sessions/     ← старые sessions/* и SUMMARY-*
 ```
 
 ## Как мы работаем
 
 ### Начало сессии
-1. Открыть `index.md` (этот файл) — посмотреть последнюю сессию + todo
-2. `reference/stand.md` — обновить токен если истёк
-3. Скопировать `templates/session.md` → `sessions/YYYY-MM-DD-<тип>.md`
-4. По ходу прогона — заполнять сессию (что делал, что нашёл)
+1. **Открыть `CONTEXT.md`** — посмотреть актуальное состояние стенда + активные блокеры + открытые TODO.
+2. По ходу прогона — пополнять секцию текущей сессии в `CONTEXT.md` плотными таблицами «# / Задача / Статус».
+3. Скриншоты — `screenshots/<YYYY-MM-DD>/F<NN>-<desc>.png`.
 
 ### Найденный баг
-1. Присвоить ID: следующий `F46` (см. `findings.md`)
-2. Добавить строку в `findings.md` (severity, status=open, краткое описание, zone, source=session)
-3. Подробности — внутри сессии (репро + ожидание + факт + скрин-фрагмент)
-4. Если кейс относится к конкретному zones-файлу — добавить ссылку на F-номер в нём
+1. Присвоить следующий F-NN.
+2. Добавить строку в `findings.md` (severity, status=open, краткое описание, zone, source).
+3. В `CONTEXT.md` в текущей сессии — короткая запись + ссылка на findings.
 
-### Прогон сценария
-1. Открыть `scenarios/<сценарий>.md` — список ссылок на TC из zones
-2. Идти по списку, проставлять `pass / fail / blocked / skipped` в чек-листе сценария
-3. Падающие → завести как findings
-4. По итогу сессии — обновить `todo.md` (что дальше)
+### Узкоцелевой документ для разраба
+- Когда находка требует подробного контекста (логи, гипотезы, что проверить) → отдельный файл в `archive/dev-handoffs/`. Ссылается из `CONTEXT.md`.
 
 ### Регресс по фиксу
-1. Найти баг в `findings.md` — поставить status=`verify-needed`
-2. Прогнать соответствующий TC из `zones/<zone>/<feature>.md`
-3. Если фикс работает → status=`fixed`. Если нет → описать в новой сессии что не сошлось
+1. Найти баг в `findings.md` — поставить `verify-needed`.
+2. Прогнать соответствующий TC из `zones/<zone>/<feature>.md` или просто воспроизвести.
+3. Фикс работает → `fixed`. Не работает → запись в CONTEXT сессии.
 
 ## Конвенции
 
 ### ID
-- **`BUG-NNN`** — backlog regression-баги. Следующий: `BUG-067`. Cross-cutting: `BUG-X05+`
-- **`F-NN`** — наши e2e-сессионные. Следующий: `F46`
-- **`TC-CHAIN-NNN`** — кейсы из сценария chain-admin-pos-kds (legacy). Новые TC именуем `TC-<ZONE>-NNN` (например `TC-CATALOG-001`)
-- **Сессии:** `YYYY-MM-DD-<тип>` (типы: `e2e`, `regression`, `smoke`, `exploratory`, `onboarding`)
+- **`F-NN`** — наши e2e-сессионные. Следующий: `F104`.
+- **`BUG-NNN`** — backlog regression-баги (legacy).
+- **Сессии в CONTEXT** — секция `## Сессия YYYY-MM-DD — <тема>`.
 
 ### Severity
-- 🔴 **Critical** — блокирует операцию, потеря данных, security-leak
-- 🟡 **Major** — функциональный баг, missing feature, важное расхождение со спекой
-- 🟢 **Minor** — UX, валидация без блокера, doc-rot
-- ⚪ **Info / by-design** — наблюдение, не баг
+- 🔴 **Critical** — блокирует операцию, потеря данных, security-leak.
+- 🟡 **Major** — функциональный баг, missing feature, важное расхождение со спекой.
+- 🟢 **Minor** — UX, валидация без блокера, doc-rot.
+- ⚪ **Info / by-design** — наблюдение, не баг.
 
 ### Status
-- `open` — нашли, не фиксили
-- `in-progress` — разработчик в работе
-- `verify-needed` — фикс задеплоен, нужен прогон регресса
-- `fixed` — подтверждён фикс
-- `retracted` — отозван (не баг при детальном разборе)
+- `open` — нашли, не фиксили.
+- `in-progress` — разработчик в работе.
+- `verify-needed` — фикс задеплоен, нужен прогон регресса.
+- `fixed` — подтверждён фикс.
+- `retracted` — отозван (не баг при детальном разборе).
 
-## Текущий статус (на 2026-05-05)
+## Текущий статус (на 2026-05-12)
 
-- Сессий проведено: **1** ([2026-05-05-e2e](sessions/2026-05-05-e2e.md))
-- Покрытие: ~50% запланированного scope `chain-admin-pos-kds` (30/60)
-- Active findings: **100** (27 Critical, 41 Major, 32 Minor) — включая 51 backlog BUG-NNN + 33 e2e F-NN
-- Что в плане далее: см. [todo.md](todo.md)
+- **103 finding** (F76–F103 за сегодня + F1-F75 в legacy).
+- **2 активных блокера**: F102/F103 (PATCH employees 500), F78/F100 (PayKeeper-adapter).
+- Стенд PROD/ТТ Smoke 001 наполнен для POS/KDS happy-path (см. CONTEXT).
+- Что в плане далее: POS/KDS happy-path → 2026-05-13.
